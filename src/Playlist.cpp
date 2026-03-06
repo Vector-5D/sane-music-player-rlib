@@ -86,7 +86,6 @@ size_t Playlist::getCurrentIndex() const { return this->current; }
 
 Track* Playlist::getCurrentTrack() {
     if (this->tracks.empty()) {
-        LOG_ERROR("Couldn't get current track; no tracks loaded in playlist.");
         return nullptr;
     }
     return this->tracks[this->current];
@@ -109,10 +108,6 @@ size_t Playlist::count()       const { return this->tracks.size(); }
 bool   Playlist::isEmpty()     const { return this->tracks.empty(); }
 bool   Playlist::hasNext()     const { return this->current + 1 < this->tracks.size(); }
 bool   Playlist::hasPrevious() const { return this->current > 0; }
-
-// -----------------------------------------------------------------------------
-// Persistence
-// -----------------------------------------------------------------------------
 
 bool Playlist::saveToFile(const std::string& name) const {
     std::filesystem::create_directories(PLAYLIST_DIR);

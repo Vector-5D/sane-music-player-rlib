@@ -6,10 +6,17 @@
 App::App() : w_width(800), w_height(450)
 {
     InitWindow(this->w_width, this->w_height, "Sane Music Player");
+    SetWindowState(FLAG_WINDOW_RESIZABLE);
     SetTargetFPS(144);
     Image icon = LoadImage("assets/icons/icon4.png");
     SetWindowIcon(icon);
     UnloadImage(icon);
+
+    this->fontRenderer.emplace(48, 48, 512);
+    this->fontRenderer->loadFile("assets/fonts/NotoSansJP-Medium.ttf");
+    this->fontRenderer->loadSize(16);
+    this->fontRenderer->loadSize(24);
+
     LOG_INFO("App initialized successfully.");
 }
 
@@ -80,5 +87,19 @@ void App::update() {
 void App::render() {
     BeginDrawing();
     ClearBackground(BLACK);
+
+    this->fontRenderer->setSize(24);
+    this->fontRenderer->drawText("Sane Music Player", 20, 20, WHITE);
+
+    Track* track = this->playlist.getCurrentTrack();
+    if (track) {
+        this->fontRenderer->setSize(24);
+        this->fontRenderer->drawText(track->getTitle(), 20, 60, WHITE);
+
+        this->fontRenderer->setSize(16);
+        this->fontRenderer->drawText(track->getArtist(), 20, 92, GRAY);
+        this->fontRenderer->drawText(track->getAlbum(), 20, 112, DARKGRAY);
+    }
+
     EndDrawing();
 }

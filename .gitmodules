@@ -1,0 +1,3 @@
+[submodule "src/rfreetype"]
+	path = src/rfreetype
+	url = https://github.com/toluschr/rfreetype

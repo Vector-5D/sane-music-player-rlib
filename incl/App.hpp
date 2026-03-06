@@ -3,6 +3,9 @@
 #include "Playlist.hpp"
 #include "AudioPlayer.hpp"
 #include "MetadataManager.hpp"
+#include "FontRenderer.hpp"
+
+#include <optional>
 
 class App {
 public:
@@ -17,9 +20,10 @@ private:
     void update();
     void render();
 
-    AudioPlayer     player;
-    Playlist        playlist;
-    MetadataManager metadata;
+    AudioPlayer            player;
+    Playlist               playlist;
+    MetadataManager        metadata;
+    std::optional<FontRenderer> fontRenderer;
 
     // Window dimensions
     int w_width;
