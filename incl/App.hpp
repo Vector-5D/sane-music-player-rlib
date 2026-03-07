@@ -5,27 +5,39 @@
 #include "MetadataManager.hpp"
 #include "FontRenderer.hpp"
 
+#include <raylib.h>
 #include <optional>
 
 class App {
-public:
+    public:
     App();
     ~App();
 
     // Primary application loop
     void run();
 
-private:
-    void handleInput();
-    void update();
-    void render();
+    private:
+        // Primary application loop components
+        void handleInput();
+        void update();
+        void render();
 
-    AudioPlayer            player;
-    Playlist               playlist;
-    MetadataManager        metadata;
-    std::optional<FontRenderer> fontRenderer;
+        // Helper functions
+        void getCurrentArtwork(std::string path, bool init = false);
+        const char* detextImageExt(const std::vector<unsigned char>& data);
 
-    // Window dimensions
-    int w_width;
-    int w_height;
+        // Application components
+        AudioPlayer     player;
+        Playlist        playlist;
+        MetadataManager metadata;
+
+        // Font renderer (for unicode text)
+        std::optional<FontRenderer> fontRenderer;
+
+        // Window dimensions
+        int w_width;
+        int w_height;
+
+        // Current artwork data
+        Texture2D current_artwork;
 };

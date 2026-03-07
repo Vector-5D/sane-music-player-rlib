@@ -51,7 +51,7 @@ class FontRenderer {
     private:
         FontCacheFT cache;
         FontFileFT  file;
-        FontFT      active;         // Currently selected size
+        FontFT      active;
         bool        fileLoaded  = false;
         bool        cacheReady  = false;
 
