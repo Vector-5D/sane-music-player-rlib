@@ -18,15 +18,45 @@ App::App() : w_width(800), w_height(450)
     this->fontRenderer->loadSize(16);
     this->fontRenderer->loadSize(24);
 
-    getCurrentArtwork("", true);
+    this->song_progress = 0.0f;
+    this->song_duration = 0;
+
+    initUI();
 
     LOG_INFO("App initialized successfully.");
 }
 
 App::~App() {
-    CloseWindow();
     UnloadTexture(this->current_artwork);
+    CloseWindow();
     LOG_INFO("App deinitialized successfully.");
+}
+
+void App::initUI() {
+    getCurrentArtwork("", true);
+
+    this->progress_slider.emplace(
+        Vector2{ PROGRESS_SLIDER_X, PROGRESS_SLIDER_Y },
+        Vector2{ PROGRESS_SLIDER_WIDTH, PROGRESS_SLIDER_HEIGHT },
+        DARKERGRAY,
+        LIGHTGRAY
+    );
+
+    this->test_button_1.emplace(
+        Vector2{this->w_width - 120.f, 20}, Vector2{100, 100},
+        DARKERGRAY, DARKGRAY, LIGHTGRAY,
+        "assets/icons/icon4.png", 5
+    );
+
+    this->test_button_1->setOnClick(
+        [](){ LOG_INFO("You clicked a button."); }
+    );
+
+    this->test_button_2.emplace(
+        Vector2{this->w_width - 120.f, 140}, Vector2{100, 100},
+        DARKERGRAY, DARKGRAY, LIGHTGRAY,
+        "Hi", WHITE, 24, 5
+    );
 }
 
 void App::run() {
@@ -77,6 +107,8 @@ void App::handleInput() {
             this->playlist.clear();
             this->playlist.append(track);
             this->playlist.playCurrent(this->player);
+            this->song_progress = 0.0f;
+            this->song_duration = track->getDuration();
         }
     }
 }
@@ -85,8 +117,25 @@ void App::update() {
     this->w_width  = GetScreenWidth();
     this->w_height = GetScreenHeight();
 
+    this->song_progress = this->player.getProgress();
+    this->song_duration = this->player.getDurationSeconds();
+
+    updateUI();
+
     if (this->player.isFinished())
         this->playlist.playNext(this->player);
+}
+
+void App::updateUI() {
+    Vector2 mouse = GetMousePosition();
+    bool clicked = IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+
+    this->progress_slider->updateValue(this->song_progress);
+    this->progress_slider->updateSize({ PROGRESS_SLIDER_WIDTH, PROGRESS_SLIDER_HEIGHT });
+    this->progress_slider->updatePos({ PROGRESS_SLIDER_X, PROGRESS_SLIDER_Y });
+
+    this->test_button_1->update(mouse, clicked);
+    this->test_button_2->update(mouse, clicked);
 }
 
 void App::render() {
@@ -102,24 +151,28 @@ void App::render() {
 
         this->fontRenderer->setSize(24);
         this->fontRenderer->drawText(
-            track->getTitle(), 317, w_height - 92, WHITE);
+            track->getTitle(), 317, w_height - 122, WHITE);
 
         this->fontRenderer->setSize(16);
         this->fontRenderer->drawText(
-            track->getArtist(), 317, w_height - 63, GRAY);
+            track->getArtist(), 317, w_height - 93, GRAY);
         this->fontRenderer->drawText(
-            track->getAlbum(), 317, w_height - 45, DARKGRAY);
+            track->getAlbum(), 317, w_height - 75, DARKGRAY);
     } else {
         DrawTextureEx(this->current_artwork, { 20.f, float(this->w_height - 276) }, 0.f, 0.5, WHITE);
 
         this->fontRenderer->setSize(24);
         this->fontRenderer->drawText(
-            "No song currently playing.", 317, w_height - 74, WHITE);
+            "No song currently playing.", 317, w_height - 104, WHITE);
 
         this->fontRenderer->setSize(16);
         this->fontRenderer->drawText(
-            "Select a song using CTRL+O.", 317, w_height - 45, GRAY);
+            "Select a song using CTRL+O.", 317, w_height - 75, GRAY);
     }
+
+    this->progress_slider->draw();
+    this->test_button_1->draw();
+    this->test_button_2->draw(&this->fontRenderer.value());
 
     DrawLine(0, this->w_height - 296, 296, this->w_height - 296, DARKGRAY);
     DrawLine(296, 0, 296, this->w_height, DARKGRAY);
