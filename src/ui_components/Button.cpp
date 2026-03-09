@@ -21,7 +21,7 @@ void Button::draw(FontRenderer* renderer) {
     // Base class does not draw text, derived classes may override this behavior
 }
 
-void Button::update(Vector2 mouse_pos, bool is_pressed) {
+void Button::updateState(Vector2 mouse_pos, bool is_pressed) {
     this->hovered = mouse_pos.x >= this->pos.x && mouse_pos.x <= this->pos.x + this->size.x &&
                      mouse_pos.y >= this->pos.y && mouse_pos.y <= this->pos.y + this->size.y;
     this->clicked = this->hovered && is_pressed;
@@ -29,6 +29,14 @@ void Button::update(Vector2 mouse_pos, bool is_pressed) {
     if (this->clicked) {
         this->onClick();
     }
+}
+
+void Button::updatePos(Vector2 pos) {
+    this->pos = pos;
+}
+
+void Button::updateSize(Vector2 size) {
+    this->size = size;
 }
 
 void Button::onClick() {

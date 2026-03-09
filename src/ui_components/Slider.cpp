@@ -35,3 +35,19 @@ void Slider::updatePos(Vector2 pos) {
     rect_bg.y = pos.y;
     rect_fg.y = pos.y;
 }
+
+void Slider::updateState(Vector2 mouse_pos, bool is_pressed) {
+    if (!on_seek) return;
+    bool hovered = mouse_pos.x >= rect_bg.x && mouse_pos.x <= rect_bg.x + rect_bg.width &&
+                   mouse_pos.y >= rect_bg.y && mouse_pos.y <= rect_bg.y + rect_bg.height;
+    if (hovered && is_pressed) {
+        float ratio = (mouse_pos.x - rect_bg.x) / rect_bg.width;
+        if (ratio < 0.f) ratio = 0.f;
+        if (ratio > 1.f) ratio = 1.f;
+        on_seek(ratio);
+    }
+}
+
+void Slider::setOnSeek(std::function<void(float)> on_seek) {
+    this->on_seek = on_seek;
+}

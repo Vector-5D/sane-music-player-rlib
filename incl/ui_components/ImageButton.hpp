@@ -11,6 +11,7 @@ class ImageButton : public Button {
             std::string image_path, int margin);
         ~ImageButton();
         void draw(FontRenderer* renderer = nullptr) override;
+        void changeImage(std::string image_path);
 
     private:
         int       margin;

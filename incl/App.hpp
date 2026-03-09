@@ -7,17 +7,36 @@
 
 #include "ui_components/Slider.hpp"
 #include "ui_components/ImageButton.hpp"
-#include "ui_components/TextButton.hpp"
+#include "ui_components/Label.hpp"
 
 #include <raylib.h>
 #include <optional>
 
 // Constants for UI components
-// Don't try to use these outside App
-#define PROGRESS_SLIDER_X (20.f + 256.f + 20.f + 20.f)
+// Don't try to use these outside the App class
+#define PREV_BUTTON_X (316.f)
+#define PREV_BUTTON_Y (this->w_height - 50.f)
+#define PREV_BUTTON_WIDTH (30.f)
+#define PREV_BUTTON_HEIGHT (30.f)
+
+#define PAUSE_RESUME_BUTTON_X (356.f)
+#define PAUSE_RESUME_BUTTON_Y (this->w_height - 50.f)
+#define PAUSE_RESUME_BUTTON_WIDTH (30.f)
+#define PAUSE_RESUME_BUTTON_HEIGHT (30.f)
+
+#define NEXT_BUTTON_X (396.f)
+#define NEXT_BUTTON_Y (this->w_height - 50.f)
+#define NEXT_BUTTON_WIDTH (30.f)
+#define NEXT_BUTTON_HEIGHT (30.f)
+
+#define PROGRESS_SLIDER_X (436.f)
 #define PROGRESS_SLIDER_Y (this->w_height - 50.f)
-#define PROGRESS_SLIDER_WIDTH (this->w_width - (20.f * 4) - 256.f)
-#define PROGRESS_SLIDER_HEIGHT 30
+#define PROGRESS_SLIDER_WIDTH (this->w_width - (20.f * 4) - 256.f - (40.f * 3))
+#define PROGRESS_SLIDER_HEIGHT (30)
+
+#define NOW_PLAYING_LABEL_X (317)
+#define NOW_PLAYING_LABEL_Y (this->w_height - 77.f)
+#define NOW_PLAYING_LABEL_SIZE (16.f)
 
 #define DARKERGRAY Color{ 23, 23, 23, 255 }
 
@@ -42,6 +61,10 @@ class App {
         void updateUI();
         void getCurrentArtwork(std::string path, bool init = false);
         const char* detextImageExt(const std::vector<unsigned char>& data);
+        void playNext();
+        void playPrevious();
+        void pauseResume();
+        void updatePauseResumeButton();
 
         // Application components
         AudioPlayer     player;
@@ -63,7 +86,9 @@ class App {
         int   song_duration;
 
         // UI components
-        std::optional<Slider> progress_slider;
-        std::optional<ImageButton> test_button_1;
-        std::optional<TextButton> test_button_2;
+        std::optional<Slider>      progress_slider;
+        std::optional<ImageButton> prev_button;
+        std::optional<ImageButton> pause_resume_button;
+        std::optional<ImageButton> next_button;
+        std::optional<Label>       now_playing_label;
 };

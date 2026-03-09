@@ -28,7 +28,10 @@ AudioPlayer::AudioPlayer() {
 }
 
 AudioPlayer::~AudioPlayer() {
-    if (this->sound_loaded) ma_sound_uninit(&this->sound);
+    if (this->sound_loaded) {
+        ma_sound_stop(&this->sound);
+        ma_sound_uninit(&this->sound);
+    }
     ma_engine_uninit(&this->engine);
     this->initialized = false;
     this->sound_loaded = false;
@@ -236,4 +239,12 @@ bool AudioPlayer::isPaused() {
 bool AudioPlayer::isFinished() {
     if (!this->sound_loaded) return false;
     return ma_sound_at_end(&this->sound);
+}
+
+bool AudioPlayer::isInitialized() {
+    return this->initialized;
+}
+
+bool AudioPlayer::hasSoundLoaded() {
+    return this->sound_loaded;
 }

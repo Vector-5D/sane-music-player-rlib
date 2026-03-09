@@ -29,6 +29,8 @@ class AudioPlayer {
         bool isPlaying();
         bool isPaused();
         bool isFinished();
+        bool isInitialized();
+        bool hasSoundLoaded();
 
     private:
         ma_engine engine;
