@@ -43,8 +43,18 @@ void App::initUI() {
         DARKERGRAY, LIGHTGRAY
     );
 
+    this->volume_slider.emplace(
+        Vector2{ VOLUME_SLIDER_X, VOLUME_SLIDER_Y },
+        Vector2{ VOLUME_SLIDER_WIDTH, VOLUME_SLIDER_HEIGHT },
+        DARKERGRAY, LIGHTGRAY
+    );
+
     this->progress_slider->setOnSeek([this](float ratio) {
         this->player.setProgress(ratio);
+    });
+
+    this->volume_slider->setOnSeek([this](float ratio) {
+        this->player.setVolume(ratio);
     });
 
     this->prev_button.emplace(
@@ -85,6 +95,13 @@ void App::initUI() {
         NOW_PLAYING_LABEL_SIZE,
         DARKGRAY,
         "No song currently playing. Select a song using CTRL+O."
+    );
+
+    this->volume_label.emplace(
+        Vector2{ VOLUME_LABEL_X, VOLUME_LABEL_Y },
+        VOLUME_LABEL_SIZE,
+        DARKGRAY,
+        "Volume: 0%"
     );
 }
 
@@ -168,6 +185,11 @@ void App::updateUI() {
     this->next_button->updatePos({ NEXT_BUTTON_X, NEXT_BUTTON_Y });
     this->next_button->updateSize({ NEXT_BUTTON_WIDTH, NEXT_BUTTON_HEIGHT });
 
+    this->volume_slider->updateState(mouse, clicked);
+    this->volume_slider->updatePos({ VOLUME_SLIDER_X, VOLUME_SLIDER_Y });
+    this->volume_slider->updateSize({ VOLUME_SLIDER_WIDTH, VOLUME_SLIDER_HEIGHT });
+    this->volume_slider->updateValue(this->player.getVolume());
+
     this->progress_slider->updateValue(this->song_progress);
     this->progress_slider->updatePos({ PROGRESS_SLIDER_X, PROGRESS_SLIDER_Y });
     this->progress_slider->updateSize({ PROGRESS_SLIDER_WIDTH, PROGRESS_SLIDER_HEIGHT });
@@ -177,16 +199,24 @@ void App::updateUI() {
 
     if (this->player.hasSoundLoaded()) {
         Track* track = this->playlist.getCurrentTrack();
+        std::string time = formatTime(this->player.getPositionSeconds()) +
+                           " / " +
+                           formatTime(this->player.getDurationSeconds());
         this->now_playing_label->updateText(
             track->getTitle() + " • " +
             track->getArtist() + " • " +
-            track->getAlbum()
+            track->getAlbum() + " • " +
+            time
         );
         this->now_playing_label->updateColor(LIGHTGRAY);
     } else {
         this->now_playing_label->updateText("No song currently playing. Select a song using CTRL+O.");
         this->now_playing_label->updateColor(DARKGRAY);
     }
+
+    this->volume_label->updatePos({ VOLUME_LABEL_X, VOLUME_LABEL_Y });
+    this->volume_label->updateColor(this->player.hasSoundLoaded() ? LIGHTGRAY : DARKGRAY);
+    this->volume_label->updateText("Volume: " + std::to_string((int)(this->player.getVolume() * 100)) + "%");
 }
 
 void App::render() {
@@ -197,10 +227,12 @@ void App::render() {
 
     DrawTextureEx(this->current_artwork, { 20.f, float(this->w_height - 276) }, 0.f, 0.5, WHITE);
     this->progress_slider->draw();
+    this->volume_slider->draw();
     this->prev_button->draw();
     this->pause_resume_button->draw();
     this->next_button->draw();
     this->now_playing_label->draw(this->fontRenderer.value());
+    this->volume_label->draw(this->fontRenderer.value());
 
     DrawLine(0, this->w_height - 296, 296, this->w_height - 296, DARKGRAY);
     DrawLine(296, 0, 296, this->w_height, DARKGRAY);
@@ -271,4 +303,13 @@ void App::updatePauseResumeButton() {
     } else {
         this->pause_resume_button->changeImage("assets/icons/play.png");
     }
+}
+
+std::string App::formatTime(float seconds) {
+    int total = (int)seconds;
+    int m = total / 60;
+    int s = total % 60;
+    char buf[16];
+    std::snprintf(buf, sizeof(buf), "%02d:%02d", m, s);
+    return buf;
 }
